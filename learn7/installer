@@ -1,0 +1,6 @@
+1/npm init -y
+2/npm install nodemon dotenv --save-dev
+3/npm install express
+
+npm install @react-native-async-storage/async-storage  @1.18.2
+# ifconfig | grep "inet"

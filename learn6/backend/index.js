@@ -54,7 +54,7 @@ passport.use(new passportLocal.Strategy({
 
 
 //got error function user and returned id
-passport.serializeUser((user, done)=>{
+passport.serializeUser((user, done) => {
     done(null, user.id);
 })
 //got error function id and returned user
