@@ -1,11 +1,8 @@
 import express from "express";
 import cors from 'cors';
-import {Users} from "./data"
-
+import {Users} from "./data.js"
 
 const app = express();
-
-
 
 // CORS (Cross-Origin Resource Sharing): If the server 
 // is on a different domain or port than your React Native app, 
@@ -19,31 +16,51 @@ app.use(cors());
 app.use(express.json());
 
 
+
+//for from parsing
 app.use(express.urlencoded({
     extended : true
 }))
 
-
 //when request came to react.js
-app.use(express.static("./frontR/build"));
+// app.use(express.static("./frontR/build"));
 
 
 // //when request came to react native
 // app.use(express.static("./PinPointEyes/build"));
 
 
-//create new object user and response that object to 
-//client because in server added other information 
-//such as id and other
-app.post("/users", (req, res) =>{
-    //Create a new event with given data
-    //....
-    //req.body
-    //.....
-    res.send(Users);
+
+//returns data to Users
+app.get("/data", async (req, res) => {
+  return res.send(Users);
 });
 
 
+
+
+
+//create new object user and response that object to 
+//client because in server added other information 
+//such as id and other
+app.post("/user", async (req, res) => {
+    //create hashedPwd password
+    const hashedPwd = await bcrypt.hash(req.password, 10);
+
+    if (!req.name || !req.password || !req.type || !req.email)
+    {
+      return res.status(400).json({ message: `received user not create db` });
+    }
+    let User = new {
+      id: `${Date.now()}_${Math.random()}`,
+      name: req.name,
+      type: req.type,
+      email: req.email,
+      password: hashedPwd
+  };
+
+  res.send(Users);
+});
 
 // Define a GET route to retrieve user data by ID
 app.get('/user/:id', (req, res) => {
@@ -68,6 +85,7 @@ app.get('/user/:id', (req, res) => {
   });
 
 
+  //change user by id
   app.put('/user/:id', (req, res) => {
     const userId = req.params.id; // Access the user ID from request parameters
   
@@ -77,15 +95,19 @@ app.get('/user/:id', (req, res) => {
         res.send(null);
 
     user.name = req.body;
-    user.type = req.body;
-    user.email = req.body;
+    user.type = req.type;
+    user.email = req.email;
 
-  
+    if (!req.name || !req.password || !req.type || !req.email)
+    {
+      return  res.status(400).json({ message: `received user not create db` });
+    }
     // Send the user data as a JSON response
     res.send(user);
   });
 
 
+  // delete user for db
   app.delete('/user/:id', (req, res) => {
     // Access the user ID from request parameters
     const userId = parseInt(req.params.id); 
@@ -103,7 +125,7 @@ app.get('/user/:id', (req, res) => {
   });
 
 
-
+//listen this port 
 let PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

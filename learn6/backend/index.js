@@ -63,7 +63,7 @@ passport.deserializeUser((id, done)=>{
 })
 
 //when open http://localhost:3000/{register} server return ./public/register.html
-app.get("/register", checkNoteAuthenticated, (req, res)=>{
+app.get("/register", checkNoteAuthenticated, (req, res) => {
     res.sendFile(path.resolve("./public/register.html"));
 })
 
